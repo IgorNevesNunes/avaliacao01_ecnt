@@ -1,0 +1,1 @@
+Este repositório contém a avaliação 01 da disciplina Econometria Aplicada a Finanças
