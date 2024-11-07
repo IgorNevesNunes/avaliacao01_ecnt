@@ -1,0 +1,241 @@
+---
+title: "Resolução da Avaliação 1"
+subtitle: "Econometria Aplicada à Finanças"
+author: "Igor Neves Nunes"
+title-block-banner: "#27445C"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    toc-location: left
+lang: "pt"
+date: today
+date-format: long
+execute: 
+  echo: false
+  warning: false
+  message: false
+crossref:
+  fig-prefix: 'Fig.'
+  tbl-prefix: 'Tab.'
+bibliography: referencias.bibtex
+csl: associacao-brasileira-de-normas-tecnicas-ipea.csl
+
+---
+
+```{r}
+#| label: setup
+
+# pacotes utilizados
+library(here)
+library(tidyverse)
+```
+
+
+
+
+## Questão 1 - Questões Conceituais
+
+
+**a.**
+Um $\hat{\beta}$ viesado significa que as médias dos estimadores dos parâmetros nos modelos são diferentes dos verdadeiros valores dos parâmetros, seja subestimando-os ou superestimando-os.
+
+**b.** 
+$E[\hat{\beta}] \neq {\beta}$
+
+**c.** 
+A ausência de viés em um estimador garante sua consistência.Isso significa que os estimadores convergirão para os verdadeiros valores dos parâmetros assintoticamente. Um estimador viesado é incosistente, ou seja, se distancia do verdadeiro valor do parâmetro. Isso interfere em questões como estimação dos intervalos de confiança e testes de hipótese. Em termos práticos, um estimador altamente viesado leva a tomadas de decisão erradas, não cumprindo o papel desejado da análise de regressão, que é apoiar decisões com base em estimativas que tentem interpretar o mundo real.
+
+**d.** 
+Os estimadores não viesados são o **B** e o **C**.
+
+**e.** 
+O estimador **A** possui a menor variância, apesar de ser viesado.
+
+**f.** 
+O melhor estimador não viesado é o **B**. Dentre os três estimadores, este seria o **BLUE**.
+
+**g.** 
+Suponha que o efeito real dos gastos com publicidade sobre as vendas (até então desconhecido) seja um aumento de 3,5% nas vendas a cada 1% a mais do orçamento gasto com publicidade; ou seja, os gastos com publicidade aumentariam as vendas. Entretanto, por algum erro de modelagem ou coleta de dados, a relação encontrada numa pesquisa foi de que os mesmos gastos com publicidade trariam um incremento de apenas 0,2% nas vendas. Esse estimador estaria viesado com relação ao valor real dessa relação, e esse viés poderia apoiar uma tomada de decisão errada por parte da direção com relação aos gastos com publicidade.
+
+**h.** 
+O erro padrão é uma medida do desvio da média amostral em relação à média populacional. Em econometria em muitos casos tem-se a intenção de obter o menor erro padrão, a fim de garantir um melhor ajuste do modelo amostral em relação aos dados populacionais.
+
+**i.** 
+**VERDADEIRO**. Uma amostra pode ser não viesada mesmo não sendo relativamente grande, desde que os procedimentos de coleta e análise dos dados sejam feitos corretamente. Já a consistência é uma propriedade assintótica, ou seja, que acompanha o tamanho da amostra, sendo que um estimador consistente convergirá para o verdadeiro valor do parâmetro assim como a amostra tende ao *n* da população.
+
+**j.** 
+Um estimador é considerado consistente se a média amostral se apróxima da média populacional assintoticamente, ou seja, quanto mais o tamanho da amostra cresce, mais a estimação dos parâmetros se aproxima do verdadeiro valor populacional.
+
+**l.** 
+O estimador **B**. Apesar de ele ser viesado, é consistente, ou seja, o estimador converge para o verdadeiro valor populacional com o aumento do tamanho da amostra. Dessa forma, um aumento no tamanho dos dados amostrais traria informações mais confiáveis.
+
+**m.** 
+A heterocedasticidade é a não constância da variância dos resíduos de um modelo. Matematicamente: $$VAR(\epsilon_i|X_i) \neq \sigma^2$$
+
+**n.**
+Um modelo com presença de heterocedasticidade deixa de ser **BLUE**. A heterocedasticidade faz com que os erros padrão dos estimadores de MQO sejam viesados; consequentemente, a construção dos intervalos de confiança será feita de maneira incorreta e também acarretará em problemas para execução dos testes de hipóteses.
+
+**o.** 
+Não. O gráfico de dispersão de $y$ contra $x$ mostra apenas a relação existente entre essas variáveis. A existência ou não de heterocedasticidade é uma informação proveninente dos resíduos.
+
+**p.** 
+Sim. O gráfico de dispersão de $\epsilon_i$ contra $x$ retorna a distribuição dos erros e produz informações sobre sua disposição, evidenciando indícios de existência de variância constante ou não constante.
+
+**q.** 
+A heterocedasticidade é verificada por meio da análise do erro amostral (resíduos), denotados por $\epsilon_i$.
+
+**r.** 
+O teste de White. Trata-se do teste mais moderno e atualizado para identificação da heterocedasticidade. O teste de White testa diversas formas funcionais, além das interações entre as variáveis explicativas. Os testes anteriores ao de White (Breusch-Pagan e Goldfeld-Quandt) possuem lacunas que podem fazer com que a heterocedasticidade não seja notada.
+
+
+
+## Questão 2 - Análise 
+
+
+**a.** Baixe o arquivo de dados `bertrand2004.csv`. Coloque o arquivo na 
+subpasta `data/raw` do seu projeto `ecnt2024_mpa`. 
+Importe este arquivo utilizando o pacote `here` e a função apropiada do 
+pacote `readr`. Qual a dimensão dos dados importados. 
+
+```{r}
+bertrand_path <- here("data", "raw", "bertrand2004.csv")
+bertrand_raw <- read_csv(bertrand_path)
+
+dim (bertrand_raw)
+```
+
+A dimensão é de 4870 (linhas) por 12 (colunas)
+
+**b.** Quais são os dois primeiros *primeiros nomes* no conjunto de dados 
+(variável `first_name`)?
+
+```{r}
+head(bertrand_raw$first_name, 2)
+```
+
+
+**c.** Qual é a porcentagem de currículos que receberam um retorno (variável 
+`i_callback`)?
+
+```{r}
+porcentagem_retorno <- mean(bertrand_raw$i_callback)
+porcentagem_retorno*100
+```
+Aproximadamente 8% dos currículos receberam retorno.
+
+**d.** Calcule a porcentagem de retornos (_isto é_, a média de 
+`i_callback`) para cada grupo racial (`race`). Parece que os empregadores 
+consideraram a raça do candidato ao fazer os retornos? Explique.
+
+```{r}
+porcentagem_retorno <- bertrand_raw %>% group_by(race) %>% summarize(retorno = mean(i_callback) * 100)
+
+porcentagem_retorno
+
+```
+
+A princípio, sim. A taxa de retorno para candidatos com nomes ligados a negros foi de 6,45%, enquanto para candidatos com nomes aparentemente de pessoas brancas foi de 9,65%. Entretanto, apenas esse dado não torna possível inferir tal relação.
+
+**e.** Qual é a diferença na taxa média de retorno entre os grupos?
+
+```{r}
+diferenca_retornos <- porcentagem_retorno$retorno[2] - porcentagem_retorno$retorno[1]
+
+diferenca_retornos
+```
+
+Diferença de 3,2 p.p.
+
+**f.** Com base na diferença nas porcentagens que observamos no item **d**, 
+podemos concluir que os empregadores consideram a raça nas decisões de 
+contratação? **Explique sua resposta.**
+
+Há uma primeira evidência de que sim. Entretanto, existem outras variáveis que precisariam ser analisadas em conjunto para apoiar essa inferência. Além disso, consequentemente seria necessária a realização de diferentes testes estatísticos para investigar essa possível influência.
+
+**g.** Sem estimar uma regressão, realize um teste estatístico para a 
+diferença nas taxas médias de retorno entre os dois grupos (_isto é_, 
+teste se a proporção de retornos é igual para os dois grupos).
+
+```{r}
+retornos_por_grupo <- bertrand_raw %>% group_by(race) %>% summarize(retornos = sum(i_callback), aplicacoes = n())
+retornos_por_grupo
+
+retornos_brancos <- retornos_por_grupo$retornos[retornos_por_grupo$race == "w"]
+aplicacoes_brancos <- retornos_por_grupo$aplicacoes[retornos_por_grupo$race == "w"]
+
+
+retornos_negros <- retornos_por_grupo$retornos[retornos_por_grupo$race == "b"]
+aplicacoes_negros <- retornos_por_grupo$aplicacoes[retornos_por_grupo$race == "b"]
+
+diferenca_medias  <- prop.test(
+  x = c(retornos_brancos, retornos_negros),
+  n = c(aplicacoes_brancos, aplicacoes_negros)
+)
+diferenca_medias
+```
+
+Os valores de prop 1 e prop 2 contêm a taxa de retorno de cada grupo, sendo aproximadamente 9,65% para brancos e 6,45% para negros. Esse resultado já encontrado anteriormente é o primeiro indício de diferença nos retornos dos dois grupos. O teste de proporções (`prop.test`) reforça essa evidência. O *p-valor* menor que 0,05 permite rejeitar a hipótese nula ($H_0$) de que não existe diferença entre os dois grupos, assim como o intervalo de confiança que não passa por zero. Esses resultados permitem inferir estatisticamente que há uma diferença na taxa de retorno dos dois grupos.
+
+**h.** Agora faça a regressão de `i_callback` (se o currículo gerou um retorno) 
+contra `i_black` (se o nome do currículo indicava um candidato negro). Reporte 
+a estimativa do parâmetro de `i_black`. Ele corresponde à diferença que 
+você encontrou em **e**?
+
+```{r}
+regressao_i_black <- lm(i_callback ~ i_black, data = bertrand_raw)
+regressao_i_black
+```
+
+Sim, corresponde. O parâmetro `i_black`, correspondente ao $\beta_1$, apresentou um valor de - 0,032, ou - 3,20 p.p. Isso significa que se $x = 1$ (currículos dos candidatos negros) a taxa de retorno vai ser 3,20% menor em relação aos currículos de candidatos brancos.
+
+**i.** Realize um teste *t* para o coeficiente de `i_black` na regressão 
+feita no item **f**. Escreva suas hipóteses (tanto $H_0$ quanto $H_A$), 
+a estatística do teste, o valor-p, o resultado do teste (isto é, 
+rejeitar ou não rejeitar $H_0$), e sua conclusão.
+
+```{r}
+summary(regressao_i_black)
+```
+
+- $H_0 = 0$ - A hipótese nula é de que os parâmetros são estatisticamente iguais a zero;
+- $H_a \neq 0$ - A hipótese alternativa é de que os parâmetros são estatisticamente diferentes de zero;
+- **t value**: 17,532 ($\beta_0$ - intercepto) e -4,115 ($\beta_1$ - i_black);
+- *p-value*: 2e-16 ($\beta_0$ - intercepto), 3.94e-05 ($\beta_1$ - i_black) e 3.941e-05 (modelo).
+- Os *p-values* extremamente pequenos permitem rejeitar a hipótese nula de que os parâmetros sejam iguais a zero; ou seja, os testes possuem significância até mesmo em nível de confiança de 0,01. O intercepto é o valor de $y$ quando $x = 0$, ou seja, quando a análise é sobre o retorno dos currículos de candidatos brancos, e apresentou uma taxa de retorno de aproximadamente 9,65%. Já quando $x = 1$, a variável *dummy* indica a análise com a presença dos currículos de candidatos negros, e indicou uma queda de 3,20 p.p nos retornos nesse caso.
+
+**j.** Agora faça a regressão de `i_callback` (se o currículo gerou um 
+retorno) contra `i_black`, `n_expr` (anos de experiência) e a interação 
+entre `i_black` e `n_expr`. Interprete as estimativas dos coeficientes 
+(tanto o significado dos coeficientes quanto se eles são estatisticamente 
+significativos).
+
+```{r}
+regressao_multipla <- lm(i_callback ~ i_black + n_expr + i_black:n_expr, data = bertrand_raw)
+summary(regressao_multipla)
+```
+
+- O intercepto ($\beta_0$) demonstra a taxa de retorno às aplicações (6,9%) quando as demais variáveis são iguais a zero. A variável `i_black` ($\beta_1$), uma *proxy* que caracteriza um candidato como negro apresentou um resultado de -0,029, ou seja, os retornos às aplicações caem nessa quantidade quando os currículos são de candidatos negros. A variável `n_expr` ($\beta_2$) mede os anos de experiência dos candidatos e apresentou um resultado positivo na influência do retorno às aplicações dos currículos, ou seja, currículos com mais anos de experiência garantem maiores chances de retorno. Todas essas estimativas foram estatisticamente significantes a um nível de confiança de 0,05. Por fim, a variável de interação `i_black:n_expr` ($\beta_3$), denota o efeito dos anos de experiência quando um candidato é negro. Curiosamente, o valor foi negativo. Apesar de muito pequeno, a interpretação é que haveria menos chances de um candidato negro receber retorno, mesmo que tivesse mais experiência. Entretanto, é importante ressaltar que este resultado não foi estatisticamente significativo.
+
+## Questão 3 - Pensando sobre Causalidade
+
+
+**a.** 
+O viés da variável consiste na não inclusão de uma variável importante ao modelo (que exerça influência sobre o $y$). Além de alterar o valor das estimativas dos betas, a variável omitida influencia também no termo de erro, uma vez que o que não é incorporado ao modelo, entra como erro, podendo ocasionar em endogeneidade. Isso causa interferência nos testes de hipóteses e em todas as estimativas e conclusões da análise de regressão.
+
+**b.** 
+Isso acontece porque variáveis importantes do modelo, que exercem influência no $y$, não seriam incorporadas, distorcendo os resultados. Por exemplo, apesar da premissa de que a raça do candidato tenha influência sobre a probabilidade de retorno, variáveis como anos de experiência e habilidades computacionais também exerceriam influência sobre a decisão dos recrutadores. É intuitivo que habilidades profissionais estejam relacionadas a essas duas variáveis, a depender do cargo; dessa forma, um modelo que não as incluísse deixaria de captar a influência delas, prejudicando as estimativas e a análise.
+
+**c.** 
+Um primeiro ponto a ser destacado é que a aleatorização pode ajudar a evitar certos tipos de vieses, como o viés de seleção, por exemplo. Com relação ao viés da variável omitida, a aleatorização da raça tende a manter a influência das outras variáveis da forma como são, sem subestima-las ou superestima-las, captando o efeito de cada uma sobre a variável resposta, sem viés causado pela *dummy* relativa à raça.
+
+
+
+
+## Referências
+
+::: {#refs}
+:::
+
+
+
